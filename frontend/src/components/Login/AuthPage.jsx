@@ -1,12 +1,16 @@
 'use client';
 import { useState, useEffect } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import { FaGoogle, FaGithub, FaTwitter } from 'react-icons/fa';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [taglines, setTaglines] = useState([]);
   const [hoveredTagline, setHoveredTagline] = useState(null);
+  const [formData, setFormData] = useState({ email: '', username: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const taglineTexts = [
     { text: 'Seva, Sambandh, Samvaad', lang: 'English' },
@@ -46,35 +50,55 @@ const AuthPage = () => {
     setTaglines(generateTaglines());
   }, []);
 
-  const [formData, setFormData] = useState({ email: '', username: '', password: '' });
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+    setError('');
+    setIsLoading(true);
 
     try {
-      const res = await fetch(`http://localhost:5000${endpoint}`, {
+      const backendURL = 'http://localhost:5000'; // Change this to your deployed backend URL as needed
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+
+      let payload;
+      if (isLogin) {
+        payload = {
+          username: formData.username,
+          password: formData.password,
+        };
+      } else {
+        payload = {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        };
+      }
+
+      const res = await fetch(`${backendURL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
+
       const data = await res.json();
 
-      alert(data.message || 'Success');
-
-      if (res.ok) {
-        router.push('/language');  // <-- Redirect here on success
+      if (!res.ok) {
+        throw new Error(data.error || 'Authentication failed');
       }
+
+      localStorage.setItem('user', JSON.stringify(data.user || data));
+      navigate('/language');
     } catch (err) {
-      console.error(err);
-      alert('An error occurred during authentication.');
+      console.error('Authentication error:', err);
+      setError(err.message || 'An error occurred during authentication.');
+    } finally {
+      setIsLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
@@ -108,14 +132,18 @@ const AuthPage = () => {
       <div className="relative z-10 w-full max-w-md bg-white rounded-2xl shadow-xl border border-[#FF9933]/30">
         <div className="flex border-b border-[#FF9933]/20">
           <button
+            type="button"
             className={`flex-1 py-4 font-medium ${isLogin ? 'bg-[#FF9933]/10 text-[#FF9933]' : 'text-gray-500'}`}
             onClick={() => setIsLogin(true)}
+            disabled={isLoading}
           >
             Login
           </button>
           <button
+            type="button"
             className={`flex-1 py-4 font-medium ${!isLogin ? 'bg-[#FF9933]/10 text-[#FF9933]' : 'text-gray-500'}`}
             onClick={() => setIsLogin(false)}
+            disabled={isLoading}
           >
             Sign Up
           </button>
@@ -129,42 +157,45 @@ const AuthPage = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            {/* Email */}
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-700 mb-1 text-sm font-medium">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                id="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9933] focus:border-[#FF9933] outline-none"
-              />
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+              {error}
             </div>
+          )}
 
-            {/* Username (only for Sign Up) */}
+          <form onSubmit={handleSubmit}>
             {!isLogin && (
               <div className="mb-4">
-                <label htmlFor="username" className="block text-gray-700 mb-1 text-sm font-medium">
-                  Username
+                <label htmlFor="email" className="block text-gray-700 mb-1 text-sm font-medium">
+                  Email
                 </label>
                 <input
-                  type="text"
-                  name="username"
-                  id="username"
+                  type="email"
+                  name="email"
+                  id="email"
                   required
-                  value={formData.username}
+                  value={formData.email}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9933] focus:border-[#FF9933] outline-none"
                 />
               </div>
             )}
 
-            {/* Password */}
+            <div className="mb-4">
+              <label htmlFor="username" className="block text-gray-700 mb-1 text-sm font-medium">
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                required
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF9933] focus:border-[#FF9933] outline-none"
+              />
+            </div>
+
             <div className="mb-6">
               <label htmlFor="password" className="block text-gray-700 mb-1 text-sm font-medium">
                 Password
@@ -180,12 +211,14 @@ const AuthPage = () => {
               />
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-[#FF9933] to-[#FF6699] text-white py-3 rounded-lg font-medium hover:opacity-90 transition"
+              disabled={isLoading}
+              className={`w-full bg-gradient-to-r from-[#FF9933] to-[#FF6699] text-white py-3 rounded-lg font-medium transition ${
+                isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90'
+              }`}
             >
-              {isLogin ? 'Login' : 'Create Account'}
+              {isLoading ? 'Processing...' : isLogin ? 'Login' : 'Create Account'}
             </button>
 
             {/* Divider */}
@@ -200,13 +233,25 @@ const AuthPage = () => {
 
             {/* Social Buttons */}
             <div className="flex justify-center gap-4">
-              <button type="button" className="p-3 border border-gray-300 rounded-full hover:bg-[#FF9933]/10">
+              <button
+                type="button"
+                className="p-3 border border-gray-300 rounded-full hover:bg-[#FF9933]/10"
+                onClick={() => alert('Google login not implemented yet')}
+              >
                 <FaGoogle className="text-[#DB4437]" size={22} />
               </button>
-              <button type="button" className="p-3 border border-gray-300 rounded-full hover:bg-[#FF9933]/10">
+              <button
+                type="button"
+                className="p-3 border border-gray-300 rounded-full hover:bg-[#FF9933]/10"
+                onClick={() => alert('Twitter login not implemented yet')}
+              >
                 <FaTwitter className="text-[#1DA1F2]" size={22} />
               </button>
-              <button type="button" className="p-3 border border-gray-300 rounded-full hover:bg-[#FF9933]/10">
+              <button
+                type="button"
+                className="p-3 border border-gray-300 rounded-full hover:bg-[#FF9933]/10"
+                onClick={() => alert('Github login not implemented yet')}
+              >
                 <FaGithub className="text-black" size={22} />
               </button>
             </div>
@@ -216,14 +261,24 @@ const AuthPage = () => {
               {isLogin ? (
                 <>
                   Don&apos;t have an account?{' '}
-                  <button onClick={() => setIsLogin(false)} className="text-[#FF9933] hover:underline">
+                  <button
+                    type="button"
+                    onClick={() => setIsLogin(false)}
+                    className="text-[#FF9933] hover:underline"
+                    disabled={isLoading}
+                  >
                     Sign up
                   </button>
                 </>
               ) : (
                 <>
                   Already have an account?{' '}
-                  <button onClick={() => setIsLogin(true)} className="text-[#FF9933] hover:underline">
+                  <button
+                    type="button"
+                    onClick={() => setIsLogin(true)}
+                    className="text-[#FF9933] hover:underline"
+                    disabled={isLoading}
+                  >
                     Login
                   </button>
                 </>
