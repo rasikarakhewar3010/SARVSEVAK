@@ -1,10 +1,93 @@
 'use client';
 
+import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
-import { FiFeather, FiUsers, FiMessageSquare } from 'react-icons/fi';
+import { FiUsers, FiMessageSquare } from 'react-icons/fi';
 import { FaHandsHelping } from 'react-icons/fa';
+import { LanguageContext } from '../LanguageContext'; // Adjust path if needed
+
+const icons = {
+  service: <FaHandsHelping size={28} />,
+  connection: <FiUsers size={28} />,
+  dialogue: <FiMessageSquare size={28} />,
+};
 
 const AboutSection = () => {
+  // Consume language from context
+  const { language } = useContext(LanguageContext);
+
+  const texts = {
+    en: {
+      heading: 'About Sarvsevak',
+      mission1:
+        'Sarvsevak is a student-led initiative aiming to promote service, human connection, and open conversations. Built with dedication and heart, we use technology to connect citizens and communities.',
+      mission2:
+        'Our goal is to empower local action, strengthen community ties, and encourage dialogue — all starting from the grassroots.',
+      pillars: [
+        {
+          title: 'Seva (Service)',
+          desc: 'Join hands with us in small acts of service that bring real change. We connect volunteers with local causes and student-run drives.',
+          stats: '1,000+ volunteer hours logged',
+          color: '#FF9933',
+          iconKey: 'service',
+        },
+        {
+          title: 'Sambandh (Connection)',
+          desc: 'We help students and citizens connect through projects, events, and shared causes, building genuine community bonds.',
+          stats: '20+ student communities engaged',
+          color: '#FB7185',
+          iconKey: 'connection',
+        },
+        {
+          title: 'Samvaad (Dialogue)',
+          desc: 'We encourage meaningful discussions through forums, blogs, and meetups in 10+ Indian languages.',
+          stats: '10+ languages supported',
+          color: '#F43F5E',
+          iconKey: 'dialogue',
+        },
+      ],
+      ctaText: 'Want to contribute and grow with us?',
+      ctaButton: 'Join the Sarvsevak Community',
+    },
+
+    hi: {
+      heading: 'सर्वसेवक के बारे में',
+      mission1:
+        'सर्वसेवक एक छात्र-नेतृत्व वाली पहल है जिसका उद्देश्य सेवा, मानव संबंध, और खुले संवाद को बढ़ावा देना है। समर्पण और दिल से निर्मित, हम प्रौद्योगिकी का उपयोग नागरिकों और समुदायों को जोड़ने के लिए करते हैं।',
+      mission2:
+        'हमारा लक्ष्य स्थानीय क्रियाओं को सशक्त बनाना, सामुदायिक संबंधों को मजबूत करना, और संवाद को प्रोत्साहित करना है — यह सब जमीनी स्तर से शुरू होता है।',
+      pillars: [
+        {
+          title: 'सेवा (Service)',
+          desc: 'छोटे-छोटे सेवा कार्यों में हमारे साथ हाथ मिलाएं जो वास्तविक बदलाव लाते हैं। हम स्वयंसेवकों को स्थानीय कारणों और छात्र-चालित अभियानों से जोड़ते हैं।',
+          stats: '1,000+ स्वयंसेवी घंटे दर्ज',
+          color: '#FF9933',
+          iconKey: 'service',
+        },
+        {
+          title: 'संबंध (Connection)',
+          desc: 'हम छात्रों और नागरिकों को परियोजनाओं, कार्यक्रमों, और साझा कारणों के माध्यम से जोड़ते हैं, जिससे सच्चे सामुदायिक बंधन बनते हैं।',
+          stats: '20+ छात्र समुदाय जुड़े',
+          color: '#FB7185',
+          iconKey: 'connection',
+        },
+        {
+          title: 'संवाद (Dialogue)',
+          desc: 'हम मंचों, ब्लॉगों, और 10+ भारतीय भाषाओं में मिलनों के माध्यम से सार्थक चर्चाओं को प्रोत्साहित करते हैं।',
+          stats: '10+ भाषाएं समर्थित',
+          color: '#F43F5E',
+          iconKey: 'dialogue',
+        },
+      ],
+      ctaText: 'क्या आप योगदान देना और हमारे साथ बढ़ना चाहते हैं?',
+      ctaButton: 'सर्वसेवक समुदाय में शामिल हों',
+    },
+
+    // Add more languages here if needed
+  };
+
+  const t = texts[language] || texts.en;
+
   return (
     <section className="relative py-18 px-6 md:px-12 bg-gradient-to-b from-white to-rose-50 overflow-hidden">
       {/* Decorative blobs */}
@@ -24,7 +107,7 @@ const AboutSection = () => {
           className="flex flex-col items-center"
         >
           <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FF9933] via-rose-500 to-[#FF9933] font-serif text-center">
-            About Sarvsevak
+            {t.heading}
           </h2>
           <div className="w-20 h-1.5 bg-gradient-to-r from-[#FF9933] to-rose-500 rounded-full mt-4 mb-8"></div>
         </motion.div>
@@ -38,39 +121,14 @@ const AboutSection = () => {
           className="mt-6 max-w-3xl mx-auto"
         >
           <p className="text-lg md:text-xl text-gray-800 leading-relaxed text-center">
-            <span className="font-bold text-[#FF9933]">Sarvsevak</span> is a student-led initiative aiming to promote service,
-            human connection, and open conversations. Built with dedication and heart, we use technology to connect citizens and communities.
+            <span className="font-bold text-[#FF9933]">Sarvsevak</span> {t.mission1}
           </p>
-          <p className="text-lg md:text-xl text-gray-700 leading-relaxed text-center mt-6">
-            Our goal is to empower local action, strengthen community ties, and encourage dialogue — all starting from the grassroots.
-          </p>
+          <p className="text-lg md:text-xl text-gray-700 leading-relaxed text-center mt-6">{t.mission2}</p>
         </motion.div>
 
         {/* Pillars */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
-          {[
-            {
-              title: 'Seva (Service)',
-              desc: 'Join hands with us in small acts of service that bring real change. We connect volunteers with local causes and student-run drives.',
-              color: '#FF9933',
-              icon: <FaHandsHelping size={28} />,
-              stats: '1,000+ volunteer hours logged'
-            },
-            {
-              title: 'Sambandh (Connection)',
-              desc: 'We help students and citizens connect through projects, events, and shared causes, building genuine community bonds.',
-              color: '#FB7185', // rose-500
-              icon: <FiUsers size={28} />,
-              stats: '20+ student communities engaged'
-            },
-            {
-              title: 'Samvaad (Dialogue)',
-              desc: 'We encourage meaningful discussions through forums, blogs, and meetups in 10+ Indian languages.',
-              color: '#F43F5E', // rose-600
-              icon: <FiMessageSquare size={28} />,
-              stats: '10+ languages supported'
-            },
-          ].map((item, i) => (
+          {t.pillars.map((item, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 50 }}
@@ -82,7 +140,7 @@ const AboutSection = () => {
             >
               <div className="flex items-center mb-4">
                 <div className="p-3 rounded-full" style={{ backgroundColor: `${item.color}20` }}>
-                  {item.icon}
+                  {icons[item.iconKey]}
                 </div>
                 <h3 className="text-xl font-bold ml-4" style={{ color: item.color }}>
                   {item.title}
@@ -104,11 +162,9 @@ const AboutSection = () => {
           viewport={{ once: true }}
           className="mt-20 text-center"
         >
-          <p className="text-xl md:text-2xl text-gray-800 mb-6 font-medium">
-            Want to contribute and grow with us?
-          </p>
+          <p className="text-xl md:text-2xl text-gray-800 mb-6 font-medium">{t.ctaText}</p>
           <button className="px-8 py-4 bg-gradient-to-r from-[#FF9933] to-rose-500 text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-            Join the Sarvsevak Community
+            {t.ctaButton}
           </button>
         </motion.div>
       </div>

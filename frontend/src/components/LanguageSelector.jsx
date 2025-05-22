@@ -1,11 +1,14 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { LanguageContext } from './LanguageContext'; // adjust path
 
 const LanguageSelector = () => {
   const [taglines, setTaglines] = useState([]);
   const [hoveredTagline, setHoveredTagline] = useState(null);
   const navigate = useNavigate();
+
+  const { setLanguage } = useContext(LanguageContext); // Get setter from context
 
   const languages = [
     { code: 'en', name: 'English', text: 'Seva, Sambandh, Samvaad' },
@@ -28,7 +31,7 @@ const LanguageSelector = () => {
       const generatedTaglines = [];
       const rows = 8;
       const itemsPerRow = 4;
-      
+
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < itemsPerRow; col++) {
           const langIndex = (row + col) % languages.length;
@@ -49,8 +52,8 @@ const LanguageSelector = () => {
   }, []);
 
   const handleLanguageSelect = (languageCode) => {
-    console.log('Selected language:', languageCode);
-    navigate('/home'); // Use navigate from react-router-dom
+    setLanguage(languageCode);  // update language globally
+    navigate('/home');          // redirect to home
   };
 
   return (
@@ -61,8 +64,8 @@ const LanguageSelector = () => {
           <div
             key={tl.id}
             className={`absolute transition-all duration-500 ease-in-out cursor-default
-              ${hoveredTagline === tl.id ? 
-                'text-gradient opacity-100 scale-105' : 
+              ${hoveredTagline === tl.id ?
+                'text-gradient opacity-100 scale-105' :
                 'text-gray-300'}`}
             style={{
               top: `${tl.top}%`,
@@ -112,7 +115,7 @@ const LanguageSelector = () => {
         </div>
 
         <div className="mt-10 text-center">
-          <button 
+          <button
             onClick={() => navigate(-1)} // Go back in history
             className="text-[#FF9933] hover:text-[#FF6699] font-medium transition-colors"
           >

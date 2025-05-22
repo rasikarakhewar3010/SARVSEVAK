@@ -3,16 +3,22 @@ import AuthPage from './components/Login/AuthPage'
 import HomePage from './Pages/HomePage'
 import NotFound from './Pages/NotFound' // Optional for 404 page
 import LanguageSelector from './components/LanguageSelector'
+import { LanguageProvider } from './components/LanguageContext';
+import ChatPage from './Pages/ChatPage'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<AuthPage />} />
-      <Route path="/home" element={<HomePage />} />
-      <Route path="/language" element={<LanguageSelector />} />
+    <LanguageProvider>
 
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+      <Routes>
+        <Route path="/" element={<AuthPage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/language" element={<LanguageSelector />} />
+        <Route path="/chat" element={<ChatPage />} />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </LanguageProvider>
   )
 }
 
