@@ -1,7 +1,6 @@
 # SarvSevak – The Culturally Aware Multilingual AI Assistant
 
 > ✨ Empowering global support through **language intelligence** and **cultural empathy**  
-> 🛠️ Built with love by **SheCode** – TY-A (CSE), MGM's College of Engineering, Nanded
 
 ---
 
@@ -74,7 +73,7 @@ Our model **learns and adapts** from live interactions to prevent cultural misst
 
 ---
 
-## 🧑‍💻 Team SheCode – TY-A (CSE)
+## 🧑‍💻 Team SheCode 
 
 - 👩‍💻 **Talat Siddiqui**
 - 👩‍💻 **Rasika Rakhewar**
