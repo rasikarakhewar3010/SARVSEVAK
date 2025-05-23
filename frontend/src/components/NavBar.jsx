@@ -29,8 +29,8 @@ const NavBar = () => {
   };
 
   const navLinks = [
-    { name: 'AI Chat', path: '#camera' },
-    { name: 'Guide', path: '#guide' },
+    { name: 'AI Chat', path: '/chat' },
+    { name: 'Guide', path: '/guide' },
     { name: 'Contact', path: '#contact' }
   ];
 

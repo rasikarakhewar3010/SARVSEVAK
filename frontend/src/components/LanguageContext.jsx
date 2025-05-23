@@ -15,9 +15,14 @@ export const LanguageProvider = ({ children }) => {
     localStorage.setItem('selectedLanguage', language);
   }, [language]);
 
+  // Determine font class based on selected language
+  const fontClass = language === 'hi' ? 'font-devanagari' : 'font-sans';
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage }}>
-      {children}
+    <LanguageContext.Provider value={{ language, setLanguage, fontClass }}>
+      <div className={fontClass}>
+        {children}
+      </div>
     </LanguageContext.Provider>
   );
 };
